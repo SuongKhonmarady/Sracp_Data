@@ -41,7 +41,7 @@ for title_element, deadline_element in zip(title_elements, deadline_elements):
 unique_data = [list(item) for item in set(tuple(row) for row in data)]
 
 # Export the data to a CSV file
-csv_filename = "news_data.csv"
+csv_filename = "Feature_Programs_data.csv"
 with open(csv_filename, "w", newline="", encoding="utf-8") as csv_file:
     writer = csv.writer(csv_file)
     writer.writerow(["Title", "Deadline"])
