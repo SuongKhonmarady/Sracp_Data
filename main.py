@@ -10,8 +10,8 @@ from urllib.parse import urljoin  # To handle relative URLs
 
 # === Selenium Setup ===
 driver_path = "chromedriver.exe"  # Replace with the path to your ChromeDriver
-# FB_PAGE_URL = "https://www.wedushare.com/search"  # Target URL
-FB_PAGE_URL = "https://www.wedushare.com/"  # Target URL
+FB_PAGE_URL = "https://www.wedushare.com/search"  # Target URL
+# FB_PAGE_URL = "https://www.wedushare.com/"  # Target URL
 
 # Start Selenium WebDriver
 service = Service(driver_path)
@@ -23,7 +23,7 @@ time.sleep(5)
 
 # Scroll to load more posts dynamically
 body = driver.find_element(By.TAG_NAME, "body")
-for _ in range(2):  # Adjust the number of scrolls as needed
+for _ in range(10):  # Adjust the number of scrolls as needed
     body.send_keys(Keys.PAGE_DOWN)
     time.sleep(2)
 
@@ -45,8 +45,6 @@ title_elements = soup.find_all("h2", class_="font-heading text-base 2xl:text-lg 
 
 # Find the deadline elements within the class "space-y-2"
 deadline_elements = soup.find_all("div", class_="space-y-2")
-
-link_elements = soup.find_all("a", href=True)  # Finds all <a> tags with href attributes
 
 # Create a list to store scraped data
 data = []

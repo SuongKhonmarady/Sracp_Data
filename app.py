@@ -2,10 +2,11 @@ import csv
 import requests
 import re
 from bs4 import BeautifulSoup
+from urllib.parse import urljoin 
 
 # URL of the website you want to scrape
 url = "https://www.wedushare.com/"  # Replace with the actual URL
-
+base_url = "https://www.wedushare.com"
 # Send a GET request to the website and parse the HTML content
 response = requests.get(url)
 soup = BeautifulSoup(response.content, "html.parser")
@@ -34,8 +35,11 @@ for title_element, deadline_element in zip(title_elements, deadline_elements):
         deadline = match.group(0) if match else "No valid date found"
     else:
         deadline = "No deadline"
-    
-    data.append([title, deadline])
+        # Extract link
+    link_tag = title_element.find_parent("a")  # Find the parent <a> tag of the title
+    full_link = urljoin(base_url, link_tag["href"]) if link_tag and link_tag["href"] else "No link found"
+
+    data.append([title, deadline, full_link])
 
 # Remove duplicate entries (if any)
 unique_data = [list(item) for item in set(tuple(row) for row in data)]
@@ -44,7 +48,7 @@ unique_data = [list(item) for item in set(tuple(row) for row in data)]
 csv_filename = "Feature_Programs_data.csv"
 with open(csv_filename, "w", newline="", encoding="utf-8") as csv_file:
     writer = csv.writer(csv_file)
-    writer.writerow(["Title", "Deadline"])
+    writer.writerow(["Title", "Deadline", "Link"])
     writer.writerows(unique_data)
 
 print(f"Data scraped successfully and saved to {csv_filename}.")
