@@ -35,7 +35,11 @@ print(f"Found {len(post_links)} posts.")
 
 # Setup CSV
 csv_file = open("chinese_scholarships_detailed.csv", mode="w", newline="", encoding="utf-8")
-csv_writer = csv.DictWriter(csv_file, fieldnames=["Title", "Link", "Official Link", "Deadline", "Eligibility"])
+csv_writer = csv.DictWriter(csv_file, fieldnames=[
+    "Title", "Link", "Official Link", "Deadline", "Eligibility",
+    "Host Country", "Host University", "Program Duration", "Degree Offered"
+])
+
 csv_writer.writeheader()
 
 # Loop through each post
@@ -60,6 +64,10 @@ for link in post_links:
     # Extract sections
     deadline = extract_section(content_div, ["deadline", "last date"])
     eligibility = extract_section(content_div, ["eligibility", "who can apply", "eligible"])
+    host_country = extract_section(content_div, ["host country", "study in"])
+    host_university = extract_section(content_div, ["host university", "offered by"])
+    program_duration = extract_section(content_div, ["program duration", "duration"])
+    degree_offered = extract_section(content_div, ["degree", "degree offered", "field of study", "what you will study"])
 
     # Save
     csv_writer.writerow({
@@ -67,8 +75,13 @@ for link in post_links:
         "Link": link,
         "Official Link": official_link,
         "Deadline": deadline,
-        "Eligibility": eligibility
+        "Eligibility": eligibility,
+        "Host Country": host_country,
+        "Host University": host_university,
+        "Program Duration": program_duration,
+        "Degree Offered": degree_offered
     })
+
 
     print(f"✅ Saved: {title}")
 
