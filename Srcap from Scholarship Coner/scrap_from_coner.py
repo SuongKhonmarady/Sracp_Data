@@ -17,6 +17,16 @@ def extract_section(soup, keywords):
                 next_tag = next_tag.find_next_sibling()
             return "\n".join(content)
     return ""
+def extract_description(content_div):
+    """Extracts main description before any of the key headings."""
+    description = []
+    for tag in content_div.find_all(recursive=False):
+        if tag.name in ["h2", "h3", "strong", "b"]:
+            break  # Stop at the first heading
+        if tag.name in ["p", "ul"]:
+            description.append(tag.get_text(strip=True))
+    return "\n".join(description)
+
 
 # Setup browser
 options = webdriver.ChromeOptions()
@@ -24,7 +34,7 @@ options = webdriver.ChromeOptions()
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
 # Load tag page
-base_url = "https://scholarshipscorner.website/tag/chinese-government-scholarship/"
+base_url = "https://scholarshipscorner.website/chinese-government-scholarship/"
 driver.get(base_url)
 time.sleep(3)
 
@@ -36,7 +46,7 @@ print(f"Found {len(post_links)} posts.")
 # Setup CSV
 csv_file = open("chinese_scholarships_detailed.csv", mode="w", newline="", encoding="utf-8")
 csv_writer = csv.DictWriter(csv_file, fieldnames=[
-    "Title", "Link", "Official Link", "Deadline", "Eligibility",
+    "Title", "Description", "Link", "Official Link", "Deadline", "Eligibility",
     "Host Country", "Host University", "Program Duration", "Degree Offered"
 ])
 
@@ -63,6 +73,7 @@ for link in post_links:
 
     # Extract sections
     deadline = extract_section(content_div, ["deadline", "last date"])
+    description = extract_description(content_div)
     eligibility = extract_section(content_div, ["eligibility", "who can apply", "eligible"])
     host_country = extract_section(content_div, ["host country", "study in"])
     host_university = extract_section(content_div, ["host university", "offered by"])
@@ -71,16 +82,19 @@ for link in post_links:
 
     # Save
     csv_writer.writerow({
-        "Title": title,
-        "Link": link,
-        "Official Link": official_link,
-        "Deadline": deadline,
-        "Eligibility": eligibility,
-        "Host Country": host_country,
-        "Host University": host_university,
-        "Program Duration": program_duration,
-        "Degree Offered": degree_offered
-    })
+    "Title": title,
+    "Description": description,
+    "Link": link,
+    "Official Link": official_link,
+    "Deadline": deadline,
+    "Eligibility": eligibility,
+    "Host Country": host_country,
+    "Host University": host_university,
+    "Program Duration": program_duration,
+    "Degree Offered": degree_offered,
+    
+})
+
 
 
     print(f"✅ Saved: {title}")
